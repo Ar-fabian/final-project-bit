@@ -8,17 +8,23 @@ const login = async( req, res=response ) =>{
     const { email, password} = req.body;
     try {
         const user = await User.findOne( { email } );
-        if(!user) return res.json( { msg: 'email/password no son correctos - email'} );
-
-        if(!user.state) return res.json( { msg: 'email/password no son correctos - estado:false'} );
+        if(!user) return res.json({
+             msg: 'email/password no son correctos',
+             ok: false
+        });
         
         const validPassword = bcryptjs.compareSync(password, user.password);
-        if(!validPassword) return res.json( { msg: 'email/password no son correctos - password'} );
+        if(!validPassword) return res.json({ 
+            msg: 'email/password no son correctos',
+            ok:false
+        });
 
 
         const token = generateJWT( user.id );
+        const { ok } = user
         res.json({
             user,
+            ok,
             token
         })        
     } catch (error) {
@@ -27,10 +33,21 @@ const login = async( req, res=response ) =>{
             msg: 'Hable con el administrador'
         })
     }
+}
 
+const validateToken = ( req, res= response) =>{
+        const user = req.user;
+        const token = req.header('x-token');
+    return res.json({
+        ok:true,
+        msg:'renew',
+        user,
+        token
+    })
 }
 
 
 module.exports = {
-    login
+    login,
+    validateToken
 }

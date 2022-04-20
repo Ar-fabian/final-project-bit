@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const user = require('../routes/user-routes');
 const auth = require('../routes/auth-routes');
+const product = require('../routes/product-routes');
 const { dbConnection } = require('../db/config-db');
 
 
@@ -14,6 +15,7 @@ class Server {
         this.port = process.env.PORT;
         this.userPath = '/api/user';
         this.authPath = '/api/auth';
+        this.productPath = '/api/product';
         //Conectar a la BD
         this.connectDB();
         //Middlewares
@@ -35,6 +37,7 @@ class Server {
     routes(){
         this.app.use(this.authPath, auth);
        this.app.use(this.userPath, user);
+       this.app.use(this.productPath, product);
     }
     listening(){
         this.app.listen( this.port, ()=>{
